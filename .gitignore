@@ -1,0 +1,72 @@
+# =========================
+# Python / FastAPI
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# =========================
+# Ambientes Virtuais
+# =========================
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# Variáveis de Ambiente (Segurança)
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs (Uvicorn / Gunicorn / App)
+# =========================
+*.log
+
+# =========================
+# Banco de Dados Local
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# Testes e Cobertura
+# =========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# =========================
+# Type Checking (Mypy)
+# =========================
+.mypy_cache/
+.pyre/
+.pytype/
+
+# =========================
+# Distribuição / Build
+# =========================
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+*.egg-info/
+*.egg
+
+# =========================
+# IDEs e Editores
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store

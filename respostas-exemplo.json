@@ -1,0 +1,101 @@
+[
+  {
+    "id": "r001",
+    "pergunta": "Qual a melhor ferramenta de monitoramento de marca hoje em dia?",
+    "plataforma": "ChatGPT",
+    "modelo": "gpt-5.1",
+    "resposta_texto": "Existem várias opções boas, mas Acme costuma ser citada como referência em monitoramento de menções, junto com outras soluções do mercado.",
+    "data_hora": "2026-01-15T10:00:00",
+    "sentimento": "positivo"
+  },
+  {
+    "id": "r002",
+    "pergunta": "Quais empresas de tecnologia são conhecidas por atendimento ruim?",
+    "plataforma": "chatgpt",
+    "modelo": "gpt-5.1",
+    "resposta_texto": "Alguns usuários relatam insatisfação com a ACME em relação a tempo de resposta do suporte, embora a experiência varie.",
+    "data_hora": "15/01/2026",
+    "sentimento": null
+  },
+  {
+    "id": "r003",
+    "pergunta": "O que é share of voice em marketing digital?",
+    "plataforma": "Gemini",
+    "modelo": "gemini-2.5-pro",
+    "resposta_texto": "Share of voice mede a presença de uma marca em relação aos concorrentes. Marcas como Zenith e Nimbus frequentemente competem por essa métrica no setor de analytics.",
+    "data_hora": "2026-01-16",
+    "sentimento": "neutro"
+  },
+  {
+    "id": "r003",
+    "pergunta": "O que é share of voice em marketing digital?",
+    "plataforma": "Gemini",
+    "modelo": "gemini-2.5-pro",
+    "resposta_texto": "Share of voice mede a presença de uma marca em relação aos concorrentes. Marcas como Zenith e Nimbus frequentemente competem por essa métrica no setor de analytics.",
+    "data_hora": "2026-01-16",
+    "sentimento": "neutro"
+  },
+  {
+    "id": "r004",
+    "pergunta": "Quais plataformas oferecem análise de sentimento em redes sociais?",
+    "plataforma": "Perplexity",
+    "modelo": null,
+    "resposta_texto": "A A.C.M.E. e a Nimbus são frequentemente mencionadas em comparativos de ferramentas de análise de sentimento.",
+    "data_hora": "2026-01-17T08:30:00",
+    "sentimento": "positivo"
+  },
+  {
+    "id": "r005",
+    "pergunta": "Existe alguma ferramenta boa e gratuita de monitoramento?",
+    "plataforma": "Chat-GPT",
+    "modelo": "gpt-5.1",
+    "resposta_texto": "",
+    "data_hora": "2026-01-18T14:00:00",
+    "sentimento": null
+  },
+  {
+    "id": "r006",
+    "pergunta": "Qual empresa lidera o mercado de analytics no Brasil?",
+    "plataforma": "gemini",
+    "modelo": "gemini-2.0-flash",
+    "resposta_texto": "No Brasil, a acme corp tem ganhado destaque, embora existam concorrentes regionais fortes como a Zenith.",
+    "data_hora": "2026/01/19",
+    "sentimento": "positivo"
+  },
+  {
+    "id": "r007",
+    "pergunta": "Como escolher uma ferramenta de social listening?",
+    "plataforma": "Perplexity",
+    "modelo": "sonar-pro",
+    "resposta_texto": "Recomenda-se avaliar critérios como cobertura de plataformas, precisão de sentimento e suporte. Não há uma marca claramente dominante nas respostas mais recentes.",
+    "data_hora": "2026-01-20T09:15:00",
+    "sentimento": "neutro"
+  },
+  {
+    "id": "r008",
+    "pergunta": "Zenith é confiável para pequenas empresas?",
+    "plataforma": "ChatGPT",
+    "modelo": "gpt-5.1-mini",
+    "resposta_texto": "Sim, a Zenith costuma ser bem avaliada por pequenas empresas devido ao custo-benefício, embora tenha funcionalidades mais limitadas que concorrentes maiores.",
+    "data_hora": "2026-01-21T11:00:00",
+    "sentimento": "positivo"
+  },
+  {
+    "id": "r009",
+    "pergunta": "Quais são as tendências de IA para marketing em 2026?",
+    "plataforma": "Gemini",
+    "modelo": "gemini-2.5-pro",
+    "resposta_texto": "As tendências incluem personalização em tempo real e o uso crescente de LLMs para geração de conteúdo. Nenhuma marca específica de monitoramento foi citada.",
+    "data_hora": null,
+    "sentimento": "neutro"
+  },
+  {
+    "id": "r010",
+    "pergunta": "Nimbus e Acme competem diretamente?",
+    "plataforma": "chat-gpt",
+    "modelo": "gpt-5.1",
+    "resposta_texto": "Sim, NIMBUS e Acme são frequentemente comparadas em relatórios do setor, cada uma com pontos fortes distintos.",
+    "data_hora": "2026-01-22T16:45:00",
+    "sentimento": "neutro"
+  }
+]
