@@ -5,7 +5,7 @@ class Response(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     question: str
     plataform: str
-    model: str
+    model: str | None = None
     response_text: str
     date_hour: datetime
     sentiment: str | None = None
@@ -16,7 +16,7 @@ class Response(SQLModel, table=True):
 
 class Brand(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
+    name: str = Field(index=True, unique=True)
 
     # Brand-Mention Relationship 1-N
     mentions: list['Mention'] = Relationship(back_populates='brand')
