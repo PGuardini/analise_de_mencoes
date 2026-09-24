@@ -1,9 +1,17 @@
+import sys
+from pathlib import Path
 from datetime import datetime
 import json
 import re
 from dateutil import parser
+from pydantic import ValidationError
 
-JSON_PATH = 'respostas-exemplo.json'
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from app.models import ResponseCreate
+
 
 def json_consumer(json_path):
     raw_data = None
@@ -12,10 +20,40 @@ def json_consumer(json_path):
 
     return raw_data
 
+def data_validation(raw_data: list[dict] | dict):
+    if isinstance(raw_data, dict):
+            raw_data = [raw_data]
+    
+    all_valid_data = []
+    errors = []
 
+    for data in raw_data:
+            try:
+                validated_data = ResponseCreate.model_validate(data)
+            except ValidationError as e:
+                errors.append({'item': data, 'error': e.errors()})
+                continue
 
-def data_cleansing(raw_data: list[dict] | dict):
-    """Data ingestion first step before database persistency"""
+            if validated_data.id not in [valid_data['origin_id'] for valid_data in all_valid_data]:                
+                new_data = {
+                    'origin_id': validated_data.id,
+                    'question': validated_data.pergunta,
+                    'platform': validated_data.plataforma,
+                    'model': validated_data.modelo,
+                    'response_text': validated_data.resposta_texto,
+                    'date_hour': validated_data.data_hora,
+                    'sentiment': validated_data.sentimento
+                }
+                
+                all_valid_data.append(new_data)
+
+    return all_valid_data, errors
+
+def data_cleansing(validated_data: list[dict]):
+    """Data cleansing and normalization before database persistency"""
+
+    if isinstance(validated_data, dict):
+        validated_data = [validated_data]
 
     plataforma_variations_mapper = {
         r"(?i)^chat[-_\s]?gpt$": "ChatGPT",
@@ -23,60 +61,41 @@ def data_cleansing(raw_data: list[dict] | dict):
         r"(?i)^perplexity$": "Perplexity"
     }
 
-    # List treatment
-    if isinstance(raw_data, list):
-        clean_data = []
-        for data in raw_data:
-            if data['id'] not in [d['id'] for d in clean_data]: # Check if exists double-assigned id
+    all_clean_data = []
+    
+    for valid_data in validated_data:
+        # Response text and question validation
+        if not valid_data.get('response_text') or not valid_data.get('question'):
+            continue
 
-                if data['resposta_texto']: # Check if resposta exists
-
-                # Platform treatment                    
-                    for pattern, correct_name in plataforma_variations_mapper.items():
-                        if re.match(pattern, data['plataforma']):
-                            data['plataforma'] = correct_name
-
-                # Datetime treatment
-                    try:
-                        data['data_hora'] = parser.parse(data['data_hora'])
-                        clean_data.append(data)
-                    except (ValueError, TypeError):
-                        # How datetime will not be used in analysis, I must prefer maintain the data and set datetime.now() as default
-                        data['data_hora'] = datetime.now()
-                        clean_data.append(data)
-
-        return clean_data
-
-    # Single Dict treatment
-    elif isinstance(raw_data, dict):
-        clean_data = None
-        if raw_data['resposta_texto']: # Check if resposta exists
-
-            # Platform treatment
+        # Platform treatment
+        if valid_data.get('platform'):
             for pattern, correct_name in plataforma_variations_mapper.items():
-                if re.match(pattern, raw_data['plataforma']):
-                    raw_data['plataforma'] = correct_name
+                if re.match(pattern, valid_data['platform']):
+                    valid_data['platform'] = correct_name
+        else:
+            continue
 
-            # Datetime treatment
-            try:
-                raw_data['data_hora'] = parser.parse(raw_data['data_hora'])
-                clean_data = raw_data
-            except (ValueError, TypeError):
-                # How datetime will not be used in analysis, I must prefer maintain the data and set datetime.now() as default
-                raw_data['data_hora'] = datetime.now()
-                clean_data = raw_data
+        # Datetime treatment
+        try:
+            if valid_data.get('date_hour') is not None:
+                valid_data['date_hour'] = parser.parse(valid_data['date_hour'])
+            else:
+                valid_data['date_hour'] = None
+        except (ValueError, TypeError):
+            valid_data['date_hour'] = None # How datetime will not be used in analysis, I must prefer maintain the data and set datetime.now() as default
 
-            return clean_data
+        all_clean_data.append(valid_data)
 
-    else:
-        raise TypeError('São suportados apenas listas de dicionários e dicionários. Favor informar um tipo válido.')
+    return all_clean_data
 
 
-def brand_mention_detector(ai_response: str):
+def brand_mention_detector(ai_response: str) -> list:
     """Function that recognizes brand mentions using regex to consider writing variations"""
+    brand_mentions_found = []
 
     if not ai_response:
-        return [] 
+        return brand_mentions_found
 
     # Brand writing variations
     BRAND_PATTERNS = {
@@ -84,8 +103,6 @@ def brand_mention_detector(ai_response: str):
         'Zenith': re.compile(r'\bzenith\b', re.IGNORECASE),
         'Nimbus': re.compile(r'\bnimbus\b', re.IGNORECASE)
     }
-
-    brand_mentions_found = []
         
     for brand, pattern in BRAND_PATTERNS.items():
         if pattern.search(ai_response):
