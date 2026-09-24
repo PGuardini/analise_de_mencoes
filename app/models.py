@@ -3,6 +3,7 @@ from sqlmodel import Field, SQLModel, Relationship
 
 class Response(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    origin_id: str | None = None
     question: str
     plataform: str
     model: str | None = None
