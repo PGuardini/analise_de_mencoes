@@ -1,18 +1,29 @@
+from typing import Optional
 from datetime import datetime
-from sqlmodel import Field, SQLModel, Relationship
+from pydantic import NaiveDatetime
+from sqlmodel import SQLModel, Field, Relationship
 
 class Response(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     origin_id: str | None = None
     question: str
-    plataform: str
+    platform: str
     model: str | None = None
     response_text: str
-    date_hour: datetime
+    date_hour: NaiveDatetime | None = Field(default_factory=datetime.now)
     sentiment: str | None = None
 
     # Response-Mention Relationship 1-N
     mentions: list['Mention'] = Relationship(back_populates='response')
+
+class ResponseCreate(SQLModel):
+    id: str
+    pergunta: str
+    plataforma: str
+    modelo: Optional[str] = None
+    resposta_texto: str
+    data_hora: Optional[str] = None
+    sentimento: Optional[str] = None
 
 
 class Brand(SQLModel, table=True):
