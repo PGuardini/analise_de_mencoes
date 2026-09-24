@@ -17,7 +17,6 @@ def json_consumer(json_path):
 def data_cleansing(raw_data: list[dict] | dict):
     """Data ingestion first step before database persistency"""
 
-    date_pattern = '%d/%m/%Y %H:%M:%S'
     plataforma_variations_mapper = {
         r"(?i)^chat[-_\s]?gpt$": "ChatGPT",
         r"(?i)^gemini$": "Gemini",     
@@ -39,11 +38,11 @@ def data_cleansing(raw_data: list[dict] | dict):
 
                 # Datetime treatment
                     try:
-                        data['data_hora'] = parser.parse(data['data_hora']).strftime(date_pattern)
+                        data['data_hora'] = parser.parse(data['data_hora'])
                         clean_data.append(data)
                     except (ValueError, TypeError):
                         # How datetime will not be used in analysis, I must prefer maintain the data and set datetime.now() as default
-                        data['data_hora'] = datetime.now().strftime(date_pattern)
+                        data['data_hora'] = datetime.now()
                         clean_data.append(data)
 
         return clean_data
@@ -60,11 +59,11 @@ def data_cleansing(raw_data: list[dict] | dict):
 
             # Datetime treatment
             try:
-                raw_data['data_hora'] = parser.parse(raw_data['data_hora']).strftime(date_pattern)
+                raw_data['data_hora'] = parser.parse(raw_data['data_hora'])
                 clean_data = raw_data
             except (ValueError, TypeError):
                 # How datetime will not be used in analysis, I must prefer maintain the data and set datetime.now() as default
-                raw_data['data_hora'] = datetime.now().strftime(date_pattern) 
+                raw_data['data_hora'] = datetime.now()
                 clean_data = raw_data
 
             return clean_data
@@ -73,8 +72,23 @@ def data_cleansing(raw_data: list[dict] | dict):
         raise TypeError('São suportados apenas listas de dicionários e dicionários. Favor informar um tipo válido.')
 
 
-if __name__ == '__main__':
-    data = json_consumer(JSON_PATH)
+def brand_mention_detector(ai_response: str):
+    """Function that recognizes brand mentions using regex to consider writing variations"""
 
-    for d in data_cleansing(data):
-        print(d['id'], d['data_hora'], d['plataforma'], d['resposta_texto'] is not None)
+    if not ai_response:
+        return [] 
+
+    # Brand writing variations
+    BRAND_PATTERNS = {
+        'Acme': re.compile(r'\ba\.?\s*c\.?\s*m\.?\s*e\.?\b', re.IGNORECASE),
+        'Zenith': re.compile(r'\bzenith\b', re.IGNORECASE),
+        'Nimbus': re.compile(r'\bnimbus\b', re.IGNORECASE)
+    }
+
+    brand_mentions_found = []
+        
+    for brand, pattern in BRAND_PATTERNS.items():
+        if pattern.search(ai_response):
+            brand_mentions_found.append(brand)
+
+    return brand_mentions_found
