@@ -40,14 +40,14 @@ class ResponseService:
                 detected_brands = brand_mention_detector(clean_response['response_text'])
 
                 if detected_brands:
-                    for brand_name, brand_ocurrency_count in detected_brands.items():
+                    for brand_name, brand_ocurrence_count in detected_brands.items():
                         actual_brand = self.brand_service.get_brand(brand_name)
                         
                         if actual_brand:
                             self.mention_service.create_mention(
                                                                 new_response.id, 
                                                                 actual_brand.id,
-                                                                brand_ocurrency_count
+                                                                brand_ocurrence_count
                                                             )
 
                 self.session.commit()
@@ -95,10 +95,19 @@ class BrandService:
         brand_by_platform = dict(self.session.exec(brand_by_platform_statement).all())
 
         total_percent_brand_by_platform = {}
-        for platform, count in brand_by_platform.items():
-            total_percent_brand_by_platform[platform] = (count * 100) / total_by_platform[platform]
+        for platform, total in total_by_platform.items():
+            brand_count_in_platform = brand_by_platform.get(platform, 0)
+            percent_in_platform = (brand_count_in_platform * 100) / total
+
+            total_percent_brand_by_platform[platform] = {
+                'total_respostas': total,
+                'total_marca': brand_count_in_platform,
+                'percentual': percent_in_platform
+            }
 
         share_of_voice = {
+            'total_respostas': total_response,
+            'total_marca_em_respostas': total_brand_in_responses,
             'percentual_marca_em_respostas': total_percent_by_brand,
             'percentual_marca_por_plataforma': total_percent_brand_by_platform
         }
@@ -109,11 +118,11 @@ class MentionService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_mention(self, response_id: int, brand_id: int, brand_ocurrency_count: int):
+    def create_mention(self, response_id: int, brand_id: int, brand_ocurrence_count: int):
         try:
             new_mention = Mention(id_response = response_id, 
                                   id_brand = brand_id,
-                                  brand_ocurrency_count=brand_ocurrency_count)
+                                  brand_ocurrence_count=brand_ocurrence_count)
 
             self.session.add(new_mention)
             return new_mention
@@ -126,12 +135,12 @@ class MentionService:
                                 select(
                                      Mention.id_response,
                                      func.count(func.distinct(Mention.id_brand)).label('distinct_brands'),
-                                     func.sum(Mention.brand_ocurrency_count).label('total_ocurrences')
+                                     func.sum(Mention.brand_ocurrence_count).label('total_ocurrences')
                                     )
                                     .group_by(Mention.id_response)
                                     .order_by(
                                               func.count(func.distinct(Mention.id_brand)).desc(),
-                                              func.sum(Mention.brand_ocurrency_count).desc()
+                                              func.sum(Mention.brand_ocurrence_count).desc()
                                             )
                                     .limit(n)
                              )
