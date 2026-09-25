@@ -20,8 +20,8 @@ def json_consumer(json_path):
 
     return raw_data
 
-def data_validation(raw_data: list[dict] | dict):
-    if isinstance(raw_data, dict):
+def data_validation(raw_data) -> tuple[list, list]:
+    if not isinstance(raw_data, list):
             raw_data = [raw_data]
     
     all_valid_data = []

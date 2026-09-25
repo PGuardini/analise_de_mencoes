@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, Field, Relationship
 
 class Response(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    origin_id: str | None = None
+    origin_id: str | None = Field(unique=True)
     question: str
     platform: str
     model: str | None = None
