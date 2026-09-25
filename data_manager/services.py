@@ -55,7 +55,7 @@ def data_cleansing(validated_data: list[dict]):
     if isinstance(validated_data, dict):
         validated_data = [validated_data]
 
-    plataforma_variations_mapper = {
+    platform_variations_mapper = {
         r"(?i)^chat[-_\s]?gpt$": "ChatGPT",
         r"(?i)^gemini$": "Gemini",     
         r"(?i)^perplexity$": "Perplexity"
@@ -70,7 +70,7 @@ def data_cleansing(validated_data: list[dict]):
 
         # Platform treatment
         if valid_data.get('platform'):
-            for pattern, correct_name in plataforma_variations_mapper.items():
+            for pattern, correct_name in platform_variations_mapper.items():
                 if re.match(pattern, valid_data['platform']):
                     valid_data['platform'] = correct_name
         else:
