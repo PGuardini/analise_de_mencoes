@@ -90,9 +90,9 @@ def data_cleansing(validated_data: list[dict]):
     return all_clean_data
 
 
-def brand_mention_detector(ai_response: str) -> list:
+def brand_mention_detector(ai_response: str) -> dict:
     """Function that recognizes brand mentions using regex to consider writing variations"""
-    brand_mentions_found = []
+    brand_mentions_found = {}
 
     if not ai_response:
         return brand_mentions_found
@@ -106,6 +106,10 @@ def brand_mention_detector(ai_response: str) -> list:
         
     for brand, pattern in BRAND_PATTERNS.items():
         if pattern.search(ai_response):
-            brand_mentions_found.append(brand)
+            brand_ocurrency_count = pattern.findall(ai_response)
+            if brand_ocurrency_count:
+                brand_mentions_found = {
+                    brand: len(brand_ocurrency_count)
+                }
 
     return brand_mentions_found

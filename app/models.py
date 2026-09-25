@@ -36,6 +36,7 @@ class Brand(SQLModel, table=True):
 
 class Mention(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    brand_ocurrency_count: int
 
     # Mention-Response Relationship 1-1
     id_response: int | None = Field(default=None, foreign_key='response.id')

@@ -40,10 +40,15 @@ class ResponseService:
                 detected_brands = brand_mention_detector(clean_response['response_text'])
 
                 if detected_brands:
-                    for brand_name in detected_brands:
+                    for brand_name, brand_ocurrency_count in detected_brands.items():
                         actual_brand = self.brand_service.get_brand(brand_name)
+                        
                         if actual_brand:
-                            self.mention_service.create_mention(new_response.id, actual_brand.id)
+                            self.mention_service.create_mention(
+                                                                new_response.id, 
+                                                                actual_brand.id,
+                                                                brand_ocurrency_count
+                                                            )
 
                 self.session.commit()
                 self.session.refresh(new_response)
@@ -104,9 +109,12 @@ class MentionService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_mention(self, response_id: int, brand_id: int):
+    def create_mention(self, response_id: int, brand_id: int, brand_ocurrency_count: int):
         try:
-            new_mention = Mention(id_response=response_id, id_brand=brand_id)
+            new_mention = Mention(id_response = response_id, 
+                                  id_brand = brand_id,
+                                  brand_ocurrency_count=brand_ocurrency_count)
+
             self.session.add(new_mention)
             return new_mention
         except Exception as e:
