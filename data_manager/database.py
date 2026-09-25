@@ -1,4 +1,3 @@
-import os
 import sys
 from pathlib import Path
 from sqlmodel import SQLModel, create_engine, Session, select
