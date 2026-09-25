@@ -121,16 +121,47 @@ class MentionService:
             raise HTTPException(status_code=422,
                                 detail=f'Something went wrong.\n {e}')
 
-    
+    def get_top_citations(self, n: int = 5):
+        citation_statement = (
+                                select(
+                                     Mention.id_response,
+                                     func.count(func.distinct(Mention.id_brand)).label('distinct_brands'),
+                                     func.sum(Mention.brand_ocurrency_count).label('total_ocurrences')
+                                    )
+                                    .group_by(Mention.id_response)
+                                    .order_by(
+                                              func.count(func.distinct(Mention.id_brand)).desc(),
+                                              func.sum(Mention.brand_ocurrency_count).desc()
+                                            )
+                                    .limit(n)
+                             )
+        
+        ranking = self.session.exec(citation_statement).all()
 
+        top_citations = []
+        for response_id, distinct_brands, total_ocurrences in ranking:
+            response = self.session.get(Response, response_id)
+            top_citations.append({
+                'plataforma': response.platform,
+                'modelo': response.model,
+                'resposta_texto': response.response_text,
+                'marcas_distintas_citadas': distinct_brands,
+                'total_de_ocorrencias': total_ocurrences
+            })
 
+        return top_citations
 
 def get_response_service(session: Session = Depends(get_session)):
-    """Retrive a ResponseService Object to access Response data"""
+    """Retrieve a ResponseService Object to access Response data"""
 
     return ResponseService(session)
 
 def get_brand_service(session: Session = Depends(get_session)):
-    """Retrive a BrandService Object to access Brand data"""
+    """Retrieve a BrandService Object to access Brand data"""
 
     return BrandService(session)
+
+def get_mention_service(session: Session = Depends(get_session)):
+    """Retrieve a MentionService Object to access Mention data"""
+
+    return MentionService(session)
