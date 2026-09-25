@@ -12,7 +12,7 @@ from data_manager.services import json_consumer
 DATABASE_URL = 'sqlite:///mention_analytics.db'
 engine = create_engine(DATABASE_URL)
 
-JSON_PATH = 'respostas-exemplo.json'
+JSON_PATH = f'{BASE_DIR}/respostas-exemplo.json'
 
 def create_db_and_tables():
     """Function that create database and all registered tables"""
