@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError
 
@@ -54,10 +54,7 @@ class ResponseService:
         if len(successfull_responses) == 1:
             return successfull_responses[0]
         else:
-            return successfull_responses
-
-            
-        
+            return successfull_responses            
 
 
 class BrandService:
@@ -67,6 +64,41 @@ class BrandService:
     def get_brand(self, brand_name: str):
         brand = self.session.exec(select(Brand).where(Brand.name == brand_name)).first()
         return brand
+
+    def get_share_of_voice(self, brand: str):
+        brand_exists = self.get_brand(brand.capitalize())
+        if not brand_exists:
+            raise HTTPException(status_code=404, detail='Could not find this brand. Please try a new one.')
+
+        # Percentual total de marca nas respostas
+        total_response = self.session.exec(select(func.count()).select_from(Response)).one()
+        brand_statement = select(func.count()).select_from(Mention).where(Mention.id_brand == brand_exists.id)
+        total_brand_in_responses = self.session.exec(brand_statement).one()
+
+        total_percent_by_brand = (total_brand_in_responses * 100) / total_response
+
+        # Percentual de marca por plataforma
+        platform_statement = select(Response.platform, func.count()).group_by(Response.platform)
+        total_by_platform = dict(self.session.exec(platform_statement).all())
+
+        brand_by_platform_statement = (select(Response.platform, func.count())
+                                        .select_from(Mention)
+                                        .join(Response, Mention.id_response == Response.id)
+                                        .where(Mention.id_brand == brand_exists.id)
+                                        .group_by(Response.platform))
+
+        brand_by_platform = dict(self.session.exec(brand_by_platform_statement).all())
+
+        total_percent_brand_by_platform = {}
+        for platform, count in brand_by_platform.items():
+            total_percent_brand_by_platform[platform] = (count * 100) / total_by_platform[platform]
+
+        share_of_voice = {
+            'percentual_marca_em_respostas': total_percent_by_brand,
+            'percentual_marca_por_plataforma': total_percent_brand_by_platform
+        }
+        return share_of_voice
+
 
 class MentionService:
     def __init__(self, session: Session):
@@ -89,3 +121,8 @@ def get_response_service(session: Session = Depends(get_session)):
     """Retrive a ResponseService Object to access Response data"""
 
     return ResponseService(session)
+
+def get_brand_service(session: Session = Depends(get_session)):
+    """Retrive a BrandService Object to access Brand data"""
+
+    return BrandService(session)
