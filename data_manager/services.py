@@ -108,8 +108,6 @@ def brand_mention_detector(ai_response: str) -> dict:
         if pattern.search(ai_response):
             brand_ocurrency_count = pattern.findall(ai_response)
             if brand_ocurrency_count:
-                brand_mentions_found = {
-                    brand: len(brand_ocurrency_count)
-                }
+                brand_mentions_found[brand] = len(brand_ocurrency_count)
 
     return brand_mentions_found
