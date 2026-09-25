@@ -142,6 +142,7 @@ class MentionService:
         for response_id, distinct_brands, total_ocurrences in ranking:
             response = self.session.get(Response, response_id)
             top_citations.append({
+                'origin_id':response.origin_id,
                 'plataforma': response.platform,
                 'modelo': response.model,
                 'resposta_texto': response.response_text,
