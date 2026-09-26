@@ -17,7 +17,10 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get('/')
 def root():
-    return {'message':'hello world'}
+    return {
+            'message':'Welcome to Brand mention analytics',
+            'docs': 'The API documentation can be read in /docs'
+            }
 
 @app.post('/respostas', response_model=Response)
 def create_responses(new_response: ResponseCreate, service: ResponseService = Depends(get_response_service)):
